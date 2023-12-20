@@ -4,9 +4,10 @@ import random
 from collections import namedtuple
 
 BOXSCALAR = 99 # How big the boxes are gonna be (both width and height)
+BOXES = 5 # How many boxes are on each side
 
 pygame.init()
-screen = pygame.display.set_mode((BOXSCALAR*5, BOXSCALAR*5)) # 5x5 99 pixel area
+screen = pygame.display.set_mode((BOXSCALAR*BOXES, BOXSCALAR*BOXES)) # 5x5 99 pixel area
 clock = pygame.time.Clock()
 
 
@@ -18,8 +19,9 @@ class Tile:
         
         self.rect = pygame.Rect(self.x, self.y, BOXSCALAR, BOXSCALAR)
         self.surface = pygame.Surface((BOXSCALAR, BOXSCALAR))
-        #self.surface.fill(pygame.Color(int((x/BOXSCALAR)*51), int((y/BOXSCALAR)*51), 255)) Fun color
-        self.surface.fill(pygame.Color(99, 173, 149)) # Non collapsed color
+        colorStep = 255/BOXES
+        self.surface.fill(pygame.Color(int((x/BOXSCALAR)*colorStep), int((y/BOXSCALAR)*colorStep), 255)); "Fun color"
+        #self.surface.fill(pygame.Color(99, 173, 149)) # Non collapsed color
 
         self.shape: tileShape = None
 
@@ -33,13 +35,11 @@ class Tile:
         screen.blit(self.surface, self.rect)
 
 tiles = []
-for row in range(0, 5):
-    print()
-    for column in range(0, 5):
+for row in range(0, BOXES):
+    #print()
+    for column in range(0, BOXES):
         addition = Tile(row*BOXSCALAR, column*BOXSCALAR)
         tiles.append(addition)
-        print(addition)
-
 
 running = True
 while running:
@@ -59,3 +59,4 @@ while running:
     clock.tick(60) # Lock off to 60 FPS
 
 pygame.quit()
+# idx = int(tile.y/BOXSCALAR) + (int(tile.x/BOXSCALAR)*BOXES) # Formula to calulate index in array from position
