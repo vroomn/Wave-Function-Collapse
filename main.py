@@ -3,8 +3,8 @@ from enum import Enum
 import random
 from collections import namedtuple
 
-BOXSCALAR = 3 # How big the boxes are gonna be (both width and height)
-BOXES = 501 # How many boxes are on each side
+BOXSCALAR = 99 # How big the boxes are gonna be (both width and height)
+BOXES = 5 # How many boxes are on each side
 
 pygame.init()
 screen = pygame.display.set_mode((BOXSCALAR*BOXES, BOXSCALAR*BOXES)) # 5x5 99 pixel area
