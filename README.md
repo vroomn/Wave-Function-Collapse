@@ -4,4 +4,5 @@ Thanks both Wikipedia and https://robertheaton.com/2018/12/17/wavefunction-colla
 Don't expect much, especially good code
 
 #### A fun little sidebar
-Accidentally while implementing the tile placement algoriithm and index calculation system it turns out that it's possible to create a test of the R and G color spectura with a solid B color (255), so uncommenting fun color and colorStep will enable this. Be sure to comment out the other fill command within the init. After that just play around with dimensions and sizes to see what there is.
+Accidentally while implementing the tile placement algorithm and index calculation system it turns out that it's possible to create a test of the R and G color spectura with a solid B color (255), so uncommenting fun color and colorStep will enable this. Be sure to comment out the other fill command within the init. After that just play around with dimensions and sizes to see what there is.
+*note this is automatically on for collapsed tiles
