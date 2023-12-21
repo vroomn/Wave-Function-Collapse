@@ -28,19 +28,36 @@ class Tile:
         self.entropy: int = 5
 
     def collapse(self):
-        def localCollapse(xChange, yChange) -> bool:
+        class locations(Enum):
+            TOP = 0
+            RIGHT = 1
+            BOTTOM = 2
+            LEFT = 3
+
+        def localCollapse(xChange, yChange, location) -> bool:
             collapse: bool = None
             # Look north and see what there is
-            idx = int((self.y+yChange)/BOXSCALAR) + (int((self.x+xChange)/BOXSCALAR)*BOXES) # Formula to calulate index in array from position
-            print(f"IDX: {idx}")
-            if idx >= 0:
+            idx = int((self.y+xChange)/BOXSCALAR) + (int((self.x+yChange)/BOXSCALAR)*BOXES) # Formula to calulate index in array from position
+            if idx >= 0 and idx < len(tiles):
                 tile: Tile = tiles[idx]
                 if tile.isCollapsed == True:
-                    if tile.shape.bottom == True:
-                        collapse = bool(random.getrandbits(1))
-                        if collapse:
-                            tiles[idx].entropy -= 1
-                        return collapse
+                    match location:
+                        case locations.BOTTOM:
+                            if tile.shape.bottom:
+                                collapse = bool(random.getrandbits(1))
+                        case locations.TOP:
+                            if tile.shape.top:
+                                collapse = bool(random.getrandbits(1))
+                        case locations.LEFT:
+                            if tile.shape.left:
+                                collapse = bool(random.getrandbits(1))
+                        case locations.RIGHT:
+                            if tile.shape.right:
+                                collapse = bool(random.getrandbits(1))
+                    
+                    if collapse:
+                        tiles[idx].entropy -= 1
+                    return collapse
                 else:
                     collapse = bool(random.getrandbits(1))
                     if collapse:
@@ -50,11 +67,14 @@ class Tile:
             # If all else fails
             return False
 
+        unCollapsedTiles.remove(self)
+        self.isCollapsed = True
+
         collapsedSectors = [
-            localCollapse(0, -BOXSCALAR),
-            localCollapse(+BOXSCALAR, 0),
-            localCollapse(0, +BOXSCALAR),
-            localCollapse(-BOXSCALAR, 0),
+            localCollapse(0, -BOXSCALAR, locations.TOP),
+            localCollapse(+BOXSCALAR, 0, locations.BOTTOM),
+            localCollapse(0, +BOXSCALAR, locations.RIGHT),
+            localCollapse(-BOXSCALAR, 0, locations.LEFT),
             False]
         
         for i in collapsedSectors:
@@ -76,6 +96,7 @@ class Tile:
         tmpRect = pygame.Rect(0, 0, offset, offset)
         tmpSurface = pygame.Surface((offset, offset))
         tmpSurface.fill(pygame.Color(117, 12, 50), tmpRect)
+
         if self.shape.bottom == True:
             self.surface.blit(tmpSurface, tmpRect.move(offset, offset*2))
 
@@ -100,25 +121,42 @@ for row in range(0, BOXES):
     for column in range(0, BOXES):
         addition = Tile(row*BOXSCALAR, column*BOXSCALAR)
         tiles.append(addition)
+        unCollapsedTiles.append(addition)
 
-tiles[3].collapse()
+tiles[0].collapse()
+tiles[1].collapse()
+tiles[2].collapse()
+
+def totalCollapse():
+    while unCollapsedTiles:
+        # Implement better sorting algorithm
+        lowestEntropy = 5 # Base entropy
+        LEptr = None
+        for i in unCollapsedTiles:
+            if i.entropy < lowestEntropy:
+                lowestEntropy = i.entropy
+                LEptr = i
+        
+        LEptr.collapse()
+
+#totalCollapse()
+
 
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False # Exit when the close button is pressed
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_c:
+                tiles[3].collapse()
 
     # ACTUAL RENDERING ------------------------------------------------------
     pygame.display.flip() # Swaps the buffers
     screen.fill(pygame.Color(122, 122, 122))
 
-    #for tile in tiles:
-    #    tile.draw()
-    tiles[3].draw()
-    tiles[2].draw()
-    tiles[8].draw()
-    tiles[4].draw()
+    for tile in tiles:
+        tile.draw()
 
     # -----------------------------------------------------------------------
 
