@@ -20,8 +20,6 @@ class Tile:
         
         self.rect = pygame.Rect(self.x, self.y, BOXSCALAR, BOXSCALAR)
         self.surface = pygame.Surface((BOXSCALAR, BOXSCALAR))
-        #colorStep = 255/BOXES
-        #self.surface.fill(pygame.Color(int((x/BOXSCALAR)*colorStep), int((y/BOXSCALAR)*colorStep), 255)); "Fun color"
         self.surface.fill(pygame.Color(99, 173, 149)) # Non collapsed color
 
         self.shape: namedtuple = tileShape(False, False, False, False, False)
@@ -74,7 +72,6 @@ class Tile:
                 break
 
         self.shape: tileShape = tileShape(collapsedSectors[0], collapsedSectors[1], collapsedSectors[2], collapsedSectors[3], collapsedSectors[4])
-        #print(self)
 
         colorStep = 255/BOXES
         self.surface.fill(pygame.Color(int((self.x/BOXSCALAR)*colorStep), int((self.y/BOXSCALAR)*colorStep), 255)); "Fun color"
@@ -142,4 +139,3 @@ while running:
     clock.tick(60) # Lock off to 60 FPS
 
 pygame.quit()
-# idx = int(tile.y/BOXSCALAR) + (int(tile.x/BOXSCALAR)*BOXES) # Formula to calulate index in array from position
