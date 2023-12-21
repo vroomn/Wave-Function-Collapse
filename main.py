@@ -1,10 +1,11 @@
 import pygame
-from enum import Enum
 import random
 from collections import namedtuple
+import threading
+from time import sleep
 
-BOXSCALAR = 99 # How big the boxes are gonna be (both width and height)
-BOXES = 5 # How many boxes are on each side
+BOXSCALAR = 33 # How big the boxes are gonna be (both width and height)
+BOXES = 15 # How many boxes are on each side
 
 pygame.init()
 screen = pygame.display.set_mode((BOXSCALAR*BOXES, BOXSCALAR*BOXES)) # 5x5 99 pixel area
@@ -109,13 +110,13 @@ for row in range(0, BOXES):
         addition = Tile(row*BOXSCALAR, column*BOXSCALAR)
         tiles.append(addition)
 
-for tile in tiles:
-    tile.collapse()
-
 def totalCollapse():
-    pass
+    for tile in tiles:
+        sleep(.5)
+        tile.collapse()
 
-#totalCollapse()
+collapseThread = threading.Thread(target=totalCollapse)
+collapseThread.start()
 
 running = True
 while running:
@@ -138,4 +139,5 @@ while running:
 
     clock.tick(60) # Lock off to 60 FPS
 
+collapseThread.join()
 pygame.quit()
