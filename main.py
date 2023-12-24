@@ -36,29 +36,33 @@ class Tile:
             False] # Center
 
         def localCollapse(xDir, yDir, tmp: int):
-            idx = (int((self.x+BOXSCALAR*xDir)/BOXSCALAR)*BOXES) + int((self.y+(BOXSCALAR*yDir))/BOXSCALAR)
-            if idx >= 0 and idx < len(tiles) and tiles[idx].isCollapsed == True:
-                tileAbove: Tile = tiles[idx]
-                if tmp == 0:
-                    if tileAbove.shape.bottom:
-                        collapsedSectors[tmp] = True
-                    else:
-                        collapsedSectors[tmp] = False
-                elif tmp == 1:
-                    if tileAbove.shape.left:
-                        collapsedSectors[tmp] = True
-                    else:
-                        collapsedSectors[tmp] = False
-                elif tmp == 2:
-                    if tileAbove.shape.top:
-                        collapsedSectors[tmp] = True
-                    else:
-                        collapsedSectors[tmp] = False
-                elif tmp == 3:
-                    if tileAbove.shape.right:
-                        collapsedSectors[tmp] = True
-                    else:
-                        collapsedSectors[tmp] = False
+            idx = ((int((self.x+(BOXSCALAR*xDir))/BOXSCALAR))*BOXES + int((self.y+(BOXSCALAR*yDir))/BOXSCALAR))
+            if idx >= 0 and idx < len(tiles):
+                tile: Tile = tiles[idx]
+                tile.entropy -= 1
+                if tile.isCollapsed:
+                    if tmp == 0:
+                        if tile.shape.bottom:
+                            collapsedSectors[tmp] = True
+                        else:
+                            collapsedSectors[tmp] = False
+                    elif tmp == 1:
+                        if tile.shape.left:
+                            collapsedSectors[tmp] = True
+                        else:
+                            collapsedSectors[tmp] = False
+                    elif tmp == 2:
+                        if tile.shape.top:
+                            collapsedSectors[tmp] = True
+                        else:
+                            collapsedSectors[tmp] = False
+                    elif tmp == 3:
+                        if tile.shape.right:
+                            collapsedSectors[tmp] = True
+                        else:
+                            collapsedSectors[tmp] = False
+                else:
+                    collapsedSectors[tmp] = bool(random.randrange(0, 2))
             else:
                 collapsedSectors[tmp] = bool(random.randrange(0, 2)) # Because the tile above is out of range, this tile sector decides how to collapse
         
@@ -77,8 +81,8 @@ class Tile:
         colorStep = 255/BOXES
         self.surface.fill(pygame.Color(int((self.x/BOXSCALAR)*colorStep), int((self.y/BOXSCALAR)*colorStep), 255)); "Fun color"
 
-    def __str__(self) -> str: # Identifies the tile when printed
-        return f"""Tile of shape: {self.shape} at position: ({self.x}, {self.y})"""
+    #def __str__(self) -> str: # Identifies the tile when printed
+    #    return f"""Tile of shape: {self.shape} at position: ({self.x}, {self.y})"""
 
     def draw(self) -> None:
         offset = BOXSCALAR/3
@@ -110,10 +114,22 @@ for row in range(0, BOXES):
         addition = Tile(row*BOXSCALAR, column*BOXSCALAR)
         tiles.append(addition)
 
+#initTile = tiles[int(len(tiles)/2)]
+#initTile.collapse()
+tiles[int(len(tiles)/2)].collapse()
+
 def totalCollapse():
-    for tile in tiles:
-        sleep(.5)
-        tile.collapse()
+    for k in range(len(tiles)-1):
+        lowestEntropyPtr: Tile = None
+        lowestEntropy = 5
+        for i in tiles:
+            tile: Tile = i
+            if tile.entropy <= lowestEntropy and not tile.isCollapsed:
+                lowestEntropyPtr = tile
+                lowestEntropy = tile.entropy
+
+        sleep(.02)
+        lowestEntropyPtr.collapse()
 
 collapseThread = threading.Thread(target=totalCollapse)
 collapseThread.start()
